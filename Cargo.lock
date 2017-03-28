@@ -1,0 +1,227 @@
+[root]
+name = "turtle_shell"
+version = "0.1.0"
+dependencies = [
+ "conrod 0.51.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "arrayvec"
+version = "0.3.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "nodrop 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "odds 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "bitflags"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "byteorder"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "conrod"
+version = "0.51.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "daggy 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pistoncore-input 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rusttype 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "daggy"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "petgraph 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "fixedbitset"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "libc"
+version = "0.2.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "linked-hash-map"
+version = "0.0.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "nodrop"
+version = "0.1.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "odds 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "num"
+version = "0.1.37"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "num-bigint 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-complex 0.1.36 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-integer 0.1.33 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-iter 0.1.33 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-rational 0.1.36 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-traits 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "num-bigint"
+version = "0.1.37"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "num-integer 0.1.33 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-traits 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rand 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.3.23 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "num-complex"
+version = "0.1.36"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "num-traits 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.3.23 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "num-integer"
+version = "0.1.33"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "num-traits 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "num-iter"
+version = "0.1.33"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "num-integer 0.1.33 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-traits 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "num-rational"
+version = "0.1.36"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "num-bigint 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-integer 0.1.33 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-traits 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.3.23 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "num-traits"
+version = "0.1.37"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "odds"
+version = "0.2.25"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "petgraph"
+version = "0.2.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "fixedbitset 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "piston-float"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "piston-viewport"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "piston-float 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "pistoncore-input"
+version = "0.17.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "bitflags 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "piston-viewport 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.3.23 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "rand"
+version = "0.3.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "libc 0.2.21 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "rustc-serialize"
+version = "0.3.23"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "rusttype"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "arrayvec 0.3.22 (registry+https://github.com/rust-lang/crates.io-index)",
+ "linked-hash-map 0.0.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "stb_truetype 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "stb_truetype"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "byteorder 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[metadata]
+"checksum arrayvec 0.3.22 (registry+https://github.com/rust-lang/crates.io-index)" = "35c1e907260135089def5aac0c66ca42624f2ed60652451812fedbc5a574baed"
+"checksum bitflags 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "aad18937a628ec6abcd26d1489012cc0e18c21798210f491af69ded9b881106d"
+"checksum byteorder 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "96c8b41881888cc08af32d47ac4edd52bc7fa27fef774be47a92443756451304"
+"checksum conrod 0.51.1 (registry+https://github.com/rust-lang/crates.io-index)" = "60a5e9796ff598358b115f8118c9b94bd1cb1b67c34a7c0e8af0606eabab07f3"
+"checksum daggy 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)" = "d6a9b61ac11d223e884f431772d311087644e4710c1555d7db270cefb5fb9c69"
+"checksum fixedbitset 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = "88c3c33fc4c00db33f5174eb98aea809c4c007db0b71351d810a7e094ea3b64d"
+"checksum libc 0.2.21 (registry+https://github.com/rust-lang/crates.io-index)" = "88ee81885f9f04bff991e306fea7c1c60a5f0f9e409e99f6b40e3311a3363135"
+"checksum linked-hash-map 0.0.10 (registry+https://github.com/rust-lang/crates.io-index)" = "f26e961e0c884309cd527b1402a5409d35db612b36915d755e1a4f5c1547a31c"
+"checksum nodrop 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)" = "52cd74cd09beba596430cc6e3091b74007169a56246e1262f0ba451ea95117b2"
+"checksum num 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)" = "98b15ba84e910ea7a1973bccd3df7b31ae282bf9d8bd2897779950c9b8303d40"
+"checksum num-bigint 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)" = "ba6d838b16e56da1b6c383d065ff1ec3c7d7797f65a3e8f6ba7092fd87820bac"
+"checksum num-complex 0.1.36 (registry+https://github.com/rust-lang/crates.io-index)" = "3534898d8a1f6b16c12f9fc2f4eaabc7ecdcc55f267213caa8988fdc7d60ff94"
+"checksum num-integer 0.1.33 (registry+https://github.com/rust-lang/crates.io-index)" = "21e4df1098d1d797d27ef0c69c178c3fab64941559b290fcae198e0825c9c8b5"
+"checksum num-iter 0.1.33 (registry+https://github.com/rust-lang/crates.io-index)" = "f7d1891bd7b936f12349b7d1403761c8a0b85a18b148e9da4429d5d102c1a41e"
+"checksum num-rational 0.1.36 (registry+https://github.com/rust-lang/crates.io-index)" = "c2dc5ea04020a8f18318ae485c751f8cfa1c0e69dcf465c29ddaaa64a313cc44"
+"checksum num-traits 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)" = "e1cbfa3781f3fe73dc05321bed52a06d2d491eaa764c52335cf4399f046ece99"
+"checksum odds 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)" = "c3df9b730298cea3a1c3faa90b7e2f9df3a9c400d0936d6015e6165734eefcba"
+"checksum petgraph 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)" = "1a6f465be0adaa474e5692d4cb24732382476bb75fa84798b9f8fd820e1ad6e6"
+"checksum piston-float 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "b058c3a640efd4bcf63266512e4bb03187192c1b29edd38b16d5a014613e3199"
+"checksum piston-viewport 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "9c5548a838fd9dc604c96d886c03c303f043a2d85f88719cca59dc7991d86343"
+"checksum pistoncore-input 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)" = "0cc4654fdf7987f621edc31f21f907aa5bec66376af1a218f63ba62e83febf25"
+"checksum rand 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)" = "022e0636ec2519ddae48154b028864bdce4eaf7d35226ab8e65c611be97b189d"
+"checksum rustc-serialize 0.3.23 (registry+https://github.com/rust-lang/crates.io-index)" = "684ce48436d6465300c9ea783b6b14c4361d6b8dcbb1375b486a69cc19e2dfb0"
+"checksum rusttype 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "c3c64ffc93b0cc5a6f5e5e84da2a4082b0271e0a1dd76e821bdac570bda7797e"
+"checksum stb_truetype 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "21b5c3b588a493a477e0d99769ee091b3627625f9ba4bdd882e6b4b0b0958805"

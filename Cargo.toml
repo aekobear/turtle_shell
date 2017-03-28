@@ -1,0 +1,7 @@
+[package]
+name = "turtle_shell"
+version = "0.1.0"
+authors = ["eiko <kokumeiko@gmail.com>"]
+
+[dependencies]
+conrod = "*"
