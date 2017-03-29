@@ -2,9 +2,15 @@ use std::process::Command;
 
 mod plugins;
 
-use plugins::wallpaper;
+use plugins::*;
+use plugins::wallpaper::*;
 
 fn main() {
-    println!("Hello, world!");
-    println!("{}", wallpaper::get_wallpaper());
+    let w = Wallpaper {};
+    for message in w.messages() {
+        println!("message: {}", message);
+    }
+    if let Value::Text(response) = w.send(Message::new("get_wallpaper".to_string())) {
+        println!("get_wallpaper: {}", response);
+    }
 }

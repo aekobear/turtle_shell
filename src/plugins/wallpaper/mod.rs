@@ -1,7 +1,31 @@
 
 use std::process::Command;
 
-pub fn get_wallpaper() -> String {
+use super::*;
+
+pub struct Wallpaper;
+
+impl Plugin for Wallpaper {
+    fn messages(&self) -> Vec<Message> {
+        vec![Message {
+                 name: "set_wallpaper".to_string(),
+                 params: vec![Param("filepath".to_string(), Value::Text(String::new()))],
+             },
+             Message {
+                 name: "get_wallpaper".to_string(),
+                 params: vec![],
+             }]
+    }
+
+    fn send(&self, m: Message) -> Value {
+        match m.name.as_ref() {
+            "get_wallpaper" => Value::Text(get_wallpaper()),
+            _ => Value::Boolean(false),
+        }
+    }
+}
+
+fn get_wallpaper() -> String {
     let output = Command::new("gsettings")
         .arg("get")
         .arg("org.gnome.desktop.background")
@@ -21,7 +45,7 @@ pub fn get_wallpaper() -> String {
     }
 }
 
-pub fn set_wallpaper(filepath: &str) {
+fn set_wallpaper(filepath: &str) {
     let output = Command::new("gsettings")
         .arg("get")
         .arg("org.gnome.desktop.background")
