@@ -1,7 +1,7 @@
+extern crate plugin;
 
 use std::process::Command;
-
-use super::*;
+use plugin::*;
 
 pub struct Wallpaper;
 

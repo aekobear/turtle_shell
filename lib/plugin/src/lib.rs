@@ -1,7 +1,5 @@
 use std::fmt::{self, Formatter, Display};
 
-pub mod wallpaper;
-
 pub trait Plugin {
     fn messages(&self) -> Vec<Message>;
     fn send(&self, Message) -> Value;
@@ -15,7 +13,7 @@ pub enum Value {
 }
 
 
-pub struct Param(String, Value);
+pub struct Param(pub String, pub Value);
 
 impl Param {
     fn new(text: &str) -> Param {
@@ -31,8 +29,8 @@ impl Param {
 }
 
 pub struct Message {
-    name: String,
-    params: Vec<Param>,
+    pub name: String,
+    pub params: Vec<Param>,
 }
 
 impl Message {

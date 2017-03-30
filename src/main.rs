@@ -1,9 +1,10 @@
+extern crate plugin;
+extern crate desktop;
+
 use std::process::Command;
 
-mod plugins;
-
-use plugins::*;
-use plugins::wallpaper::*;
+use plugin::*;
+use desktop::*;
 
 fn main() {
     let w = Wallpaper {};

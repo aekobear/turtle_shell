@@ -4,4 +4,9 @@ version = "0.1.0"
 authors = ["eiko <kokumeiko@gmail.com>"]
 
 [dependencies]
+
+plugin = { path = "lib/plugin" }
+desktop = { path = "plugins/desktop" }
+
 conrod = "*"
+

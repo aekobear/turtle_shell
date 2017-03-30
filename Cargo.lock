@@ -3,6 +3,8 @@ name = "turtle_shell"
 version = "0.1.0"
 dependencies = [
  "conrod 0.51.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "desktop 0.1.0",
+ "plugin 0.1.0",
 ]
 
 [[package]]
@@ -41,6 +43,13 @@ version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "petgraph 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "desktop"
+version = "0.1.0"
+dependencies = [
+ "plugin 0.1.0",
 ]
 
 [[package]]
@@ -167,6 +176,10 @@ dependencies = [
  "piston-viewport 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.23 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "plugin"
+version = "0.1.0"
 
 [[package]]
 name = "rand"
