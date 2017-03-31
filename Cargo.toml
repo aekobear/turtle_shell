@@ -9,4 +9,5 @@ plugin = { path = "lib/plugin" }
 desktop = { path = "plugins/desktop" }
 
 conrod = "*"
+mrusty = "*"
 
