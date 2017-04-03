@@ -22,9 +22,17 @@ def rd_tree(chars)
       word << c
     end
   end
+  list << word unless word.empty?
+  list
 rescue StopIteration
   raise "missing paren?"
 end
 
+p "(add 5 (add 4 1) 3)"
+p rd_parse "(add 5 (add 4 1) 3)"
+p rd_parse "add 5 (add 4 1) 3)"
+p rd_parse "add 5 ((add 4 1)) 3"
+p rd_parse "((add 5 (add 4 1) 3))"
 
-p rd_parse("(add 5 (add 4 1) 3)")
+p "add ((add 5 5)) 3"
+p rd_parse "add ((add 5 5)) 3"
