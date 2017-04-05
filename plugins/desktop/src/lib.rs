@@ -6,6 +6,14 @@ use plugin::*;
 pub struct Wallpaper;
 
 impl Plugin for Wallpaper {
+    fn load(&self) -> bool {
+        true
+    }
+
+    fn name(&self) -> String {
+        "Wallpaper".to_string()
+    }
+
     fn messages(&self) -> Vec<Message> {
         vec![Message {
                  name: "set_wallpaper".to_string(),

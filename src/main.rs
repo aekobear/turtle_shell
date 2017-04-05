@@ -2,6 +2,8 @@
 
 use std::io;
 
+mod parser;
+
 extern crate plugin;
 use plugin::*;
 
@@ -9,62 +11,57 @@ extern crate desktop;
 use desktop::*;
 
 fn main() {
+    let shell = Shell { plugins: vec![] };
     const VERSION: &'static str = env!("CARGO_PKG_VERSION");
     println!("welcome to turtle shell v.{}!", VERSION);
-    let w = Wallpaper {};
-    for message in w.messages() {
-        println!("message: {}", message);
-    }
+    let plugins: Vec<&Plugin> = vec![&Wallpaper {}];
+    shell.load_plugins(plugins);
     loop {
-        let mut command = String::new();
-        io::stdin().read_line(&mut command).expect("failed to read line");
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).expect("failed to read line");
+        let command = parser::parse_command(&input);
 
     }
-    if let Value::Text(response) = w.send(Message::new("get_wallpaper".to_string())) {
-        println!("get_wallpaper: {}", response);
-    }
 }
 
-
-enum Command {
-    Literal(String),
-    Expression { params: Vec<Command> },
+struct Shell<'a> {
+    plugins: Vec<(&'a Plugin, Vec<Message>)>,
 }
 
-fn parse_command(text: &str) -> Command {
-    _parse_command(&mut text.chars())
-}
-
-fn _parse_command(chars: &mut std::str::Chars) -> Command {
-
-    let mut params = vec![];
-
-    let mut word = String::new();
-
-    while let Some(c) = chars.next() {
-        if c.is_whitespace() {
-            if !word.is_empty() {
-                params.push(Command::Literal(word));
+impl<'a> Shell<'a> {
+    fn execute_command(&self, command: parser::Command) -> Value {
+        match command {
+            parser::Command::Literal(literal) => Value::new(&literal),
+            parser::Command::Expression { terms } => {
+                let resolved_terms = vec![];
+                for term in terms {
+                    let resolved = match term {
+                        parser::Command::Literal(literal) => Value::new(&literal),
+                        expression => self.execute_command(expression),
+                    };
+                    resolved_terms.push(resolved);
+                }
+                let message = Message {
+                    name: resolved_terms[0].to_string(),
+                    //TODO: fix these annoying Value casting issues.
+                    //TODO: put resolved_terms into a message and send it!
+                    params: vec![],
+                };
+                return Value::new("");
             }
-            word = String::new();
-        } else if c == '(' {
-            if !word.is_empty() {
-                params.push(Command::Literal(word));
-            }
-            word = String::new();
-            params.push(_parse_command(chars));
-        } else if c == ')' {
-            if !word.is_empty() {
-                params.push(Command::Literal(word));
-            }
-            return Command::Expression { params: params };
-        } else {
-            word.push(c);
         }
     }
 
-    if !word.is_empty() {
-        params.push(Command::Literal(word));
+    fn load_plugins(&self, plugins: Vec<&'a Plugin>) {
+        for plugin in plugins {
+            print!("loading {}...", plugin.name());
+            if plugin.load() {
+                let messages = plugin.messages();
+                self.plugins.push((plugin, messages));
+                println!("done");
+            } else {
+                println!("error!");
+            }
+        }
     }
-    Command::Expression { params: params }
 }

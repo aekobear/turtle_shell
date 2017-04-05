@@ -1,6 +1,8 @@
 use std::fmt::{self, Formatter, Display};
 
 pub trait Plugin {
+    fn load(&self) -> bool;
+    fn name(&self) -> String;
     fn messages(&self) -> Vec<Message>;
     fn send(&self, Message) -> Value;
 }
@@ -15,16 +17,22 @@ pub enum Value {
 
 pub struct Param(pub String, pub Value);
 
-impl Param {
-    fn new(text: &str) -> Param {
+impl Value {
+    pub fn new(text: &str) -> Value {
         if let Ok(n) = text.parse::<i64>() {
-            return Param(String::new(), Value::Number(n));
+            return Value::Number(n);
         } else if let Ok(d) = text.parse::<f64>() {
-            return Param(String::new(), Value::Decimal(d));
+            return Value::Decimal(d);
         } else if let Ok(b) = text.parse::<bool>() {
-            return Param(String::new(), Value::Boolean(b));
+            return Value::Boolean(b);
         }
-        Param(String::new(), Value::Text(text.to_string()))
+        Value::Text(text.to_string())
+    }
+}
+
+impl Param {
+    pub fn new(text: &str) -> Param {
+        Param(String::new(), Value::new(&text))
     }
 }
 
@@ -42,7 +50,7 @@ impl Message {
         };
         let mut v = vec![];
         while let Some(param) = split.next() {
-            v.push(Param::new(&text));
+            v.push(Param::new(&param));
         }
         Message {
             name: name,
