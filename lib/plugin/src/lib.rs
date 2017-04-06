@@ -3,8 +3,17 @@ use std::fmt::{self, Formatter, Display};
 pub trait Plugin {
     fn load(&self) -> bool;
     fn name(&self) -> String;
-    fn messages(&self) -> Vec<Message>;
+    fn blueprints(&self) -> Vec<Blueprint>;
     fn send(&self, Message) -> Value;
+}
+
+pub enum ValueType {
+    Number,
+    Decimal,
+    Boolean,
+    Text,
+    Error,
+    None,
 }
 
 pub enum Value {
@@ -12,29 +21,79 @@ pub enum Value {
     Decimal(f64),
     Boolean(bool),
     Text(String),
+    Error(i64, String),
 }
 
+impl Value {
+    fn new(value: &str, value_type: ValueType) -> Result<Value, String> {
+        match value_type {
+            Number => {
+                match value.parse::<i64>() {
+                    Ok(value) => Ok(Value::Number(value)),
+                    Err(_) => Err(format!("this value cannot be made into a Number: {}", value)),
+                }
+            }
+            Decimal => {
+                match value.parse::<f64>() {
+                    Ok(value) => Ok(Value::Decimal(value)),
+                    Err(_) => Err(format!("this value cannot be made into a Decimal: {}", value)),
+                }
+            }
+            Boolean => {
+                match value.parse::<bool>() {
+                    Ok(value) => Ok(Value::Boolean(value)),
+                    Err(_) => Err(format!("this value cannot be made into a Boolean: {}", value)),
+                }
+            }
+            Text => Ok(Value::Text(value.to_string())),
+            Error => Ok(Value::Error(1, value.to_string())),
+        }
+    }
+}
+
+pub struct Term {
+    name: String,
+    value_type: ValueType,
+    value: Option<Value>,
+    optional: bool,
+}
+
+impl Term {
+    pub fn new(name: &str, value_type: ValueType, optional: bool) -> Term {
+        Term {
+            name: name.to_string(),
+            value_type: value_type,
+            optional: optional,
+            value: None,
+        }
+    }
+}
+
+pub struct Blueprint {
+    name: Value,
+    return_type: ValueType,
+    terms: Vec<Term>,
+}
+
+impl Blueprint {
+    pub fn new(name: &str, return_type: ValueType, terms: Vec<Term>) -> Blueprint {
+        Blueprint {
+            name: Value::Text(name.to_string()),
+            return_type: return_type,
+            terms: terms,
+        }
+
+    }
+}
 
 pub struct Param(pub String, pub Value);
 
-impl Value {
-    pub fn new(text: &str) -> Value {
-        if let Ok(n) = text.parse::<i64>() {
-            return Value::Number(n);
-        } else if let Ok(d) = text.parse::<f64>() {
-            return Value::Decimal(d);
-        } else if let Ok(b) = text.parse::<bool>() {
-            return Value::Boolean(b);
-        }
-        Value::Text(text.to_string())
+impl Param {
+    pub fn new(text: &str) -> Param {
+        Param(String::new(), Value::new(&text, ValueType::Text).unwrap())
     }
 }
 
-impl Param {
-    pub fn new(text: &str) -> Param {
-        Param(String::new(), Value::new(&text))
-    }
-}
 
 pub struct Message {
     pub name: String,

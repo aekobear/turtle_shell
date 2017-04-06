@@ -29,24 +29,18 @@ struct Shell<'a> {
 }
 
 impl<'a> Shell<'a> {
-    fn execute_command(&self, command: parser::Command) -> Value {
+    fn execute_command(&self, command: parser::Command, return_type: ValueType) -> Value {
         match command {
-            parser::Command::Literal(literal) => Value::new(&literal),
+            parser::Command::Literal(literal) => match Value::new(&literal, ValueType) { Ok(value) => value, Err(message) => Value::new(message, ValueType::Error) }
             parser::Command::Expression { terms } => {
                 let resolved_terms = vec![];
-                for term in terms {
-                    let resolved = match term {
-                        parser::Command::Literal(literal) => Value::new(&literal),
-                        expression => self.execute_command(expression),
-                    };
+                let first = self.execute_command(first);
+
+                for term in terms[1..] {
+                    let resolved = self.execute_command(term);
                     resolved_terms.push(resolved);
                 }
-                let message = Message {
-                    name: resolved_terms[0].to_string(),
-                    //TODO: fix these annoying Value casting issues.
-                    //TODO: put resolved_terms into a message and send it!
-                    params: vec![],
-                };
+
                 return Value::new("");
             }
         }
