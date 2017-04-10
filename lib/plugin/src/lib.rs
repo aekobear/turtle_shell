@@ -25,7 +25,7 @@ pub enum Value {
 }
 
 impl Value {
-    fn new(value: &str, value_type: ValueType) -> Result<Value, String> {
+    pub fn new(value: &str, value_type: ValueType) -> Result<Value, String> {
         match value_type {
             Number => {
                 match value.parse::<i64>() {
@@ -49,6 +49,41 @@ impl Value {
             Error => Ok(Value::Error(1, value.to_string())),
         }
     }
+
+    pub fn is_a(&self, value_type: ValueType) -> bool {
+        match self {
+            &Value::Number(_) => {
+                match value_type {
+                    ValueType::Number => true,
+                    _ => false,
+                }
+            }
+            &Value::Decimal(_) => {
+                match value_type {
+                    ValueType::Decimal => true,
+                    _ => false,
+                }
+            }
+            &Value::Boolean(_) => {
+                match value_type {
+                    ValueType::Boolean => true,
+                    _ => false,
+                }
+            }
+            &Value::Text(_) => {
+                match value_type {
+                    ValueType::Text => true,
+                    _ => false,
+                }
+            }
+            &Value::Error(_, _) => {
+                match value_type {
+                    ValueType::Error => true,
+                    _ => false,
+                }
+            }
+        }
+    }
 }
 
 pub struct Term {
@@ -67,20 +102,28 @@ impl Term {
             value: None,
         }
     }
+
+    pub fn set(value: Value) -> Result<Value, String> {//TODO: IMPLEMENT THIS}
 }
 
-pub struct Blueprint {
+pub struct Blueprint<'a> {
+    plugin: &'a Plugin,
     name: Value,
     return_type: ValueType,
     terms: Vec<Term>,
 }
 
-impl Blueprint {
-    pub fn new(name: &str, return_type: ValueType, terms: Vec<Term>) -> Blueprint {
+impl<'a> Blueprint<'a> {
+    pub fn new(plugin: &'a Plugin,
+               name: &str,
+               return_type: ValueType,
+               terms: Vec<Term>)
+               -> Blueprint<'a> {
         Blueprint {
             name: Value::Text(name.to_string()),
             return_type: return_type,
             terms: terms,
+            plugin: plugin,
         }
 
     }

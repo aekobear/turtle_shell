@@ -14,15 +14,12 @@ impl Plugin for Wallpaper {
         "Wallpaper".to_string()
     }
 
-    fn messages(&self) -> Vec<Message> {
-        vec![Message {
-                 name: "set_wallpaper".to_string(),
-                 params: vec![Param("filepath".to_string(), Value::Text(String::new()))],
-             },
-             Message {
-                 name: "get_wallpaper".to_string(),
-                 params: vec![],
-             }]
+    fn blueprints(&self) -> Vec<Blueprint> {
+        vec![Blueprint::new(self,
+                            "set_wallpaper",
+                            ValueType::None,
+                            vec![Term::new("filepath", ValueType::Text, false)]),
+             Blueprint::new(self, "get_wallpaper", ValueType::Text, vec![])]
     }
 
     fn send(&self, m: Message) -> Value {
