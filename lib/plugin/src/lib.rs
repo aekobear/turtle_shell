@@ -4,9 +4,10 @@ pub trait Plugin {
     fn load(&self) -> bool;
     fn name(&self) -> String;
     fn blueprints(&self) -> Vec<Blueprint>;
-    fn send(&self, Message) -> Value;
+    fn receive(&self, &Blueprint) -> Value;
 }
 
+#[derive(Clone, Copy)]
 pub enum ValueType {
     Number,
     Decimal,
@@ -84,11 +85,21 @@ impl Value {
             }
         }
     }
+
+    pub fn to_string(&self) -> String {
+        match self {
+            &Value::Number(n) => n.to_string(),
+            &Value::Decimal(d) => d.to_string(),
+            &Value::Boolean(b) => b.to_string(),
+            &Value::Text(ref t) => t.to_string(),
+            &Value::Error(c, ref t) => format!("({}): {}", c.to_string(), t.to_string()),
+        }
+    }
 }
 
 pub struct Term {
     name: String,
-    value_type: ValueType,
+    pub value_type: ValueType,
     value: Option<Value>,
     optional: bool,
 }
@@ -103,14 +114,20 @@ impl Term {
         }
     }
 
-    pub fn set(value: Value) -> Result<Value, String> {//TODO: IMPLEMENT THIS}
+    pub fn set(&mut self, value: Value) -> Result<(), String> {
+        if value.is_a(self.value_type) {
+            self.value = Some(value);
+            return Ok(());
+        }
+        return Err("set term to wrong type".to_string());
+    }
 }
 
 pub struct Blueprint<'a> {
     plugin: &'a Plugin,
-    name: Value,
+    pub name: Value,
     return_type: ValueType,
-    terms: Vec<Term>,
+    pub terms: Vec<Term>,
 }
 
 impl<'a> Blueprint<'a> {
@@ -126,6 +143,10 @@ impl<'a> Blueprint<'a> {
             plugin: plugin,
         }
 
+    }
+
+    pub fn send(&self) -> Value {
+        self.plugin.receive(self)
     }
 }
 

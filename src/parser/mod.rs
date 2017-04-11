@@ -33,7 +33,7 @@ fn _parse_command(chars: &mut std::str::Chars) -> Command {
             if !word.is_empty() {
                 params.push(Command::Literal(word));
             }
-            return Command::Expression { params: params };
+            return Command::Expression { terms: params };
         } else {
             word.push(c);
         }
@@ -42,5 +42,5 @@ fn _parse_command(chars: &mut std::str::Chars) -> Command {
     if !word.is_empty() {
         params.push(Command::Literal(word));
     }
-    Command::Expression { params: params }
+    Command::Expression { terms: params }
 }

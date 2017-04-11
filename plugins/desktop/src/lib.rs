@@ -22,8 +22,8 @@ impl Plugin for Wallpaper {
              Blueprint::new(self, "get_wallpaper", ValueType::Text, vec![])]
     }
 
-    fn send(&self, m: Message) -> Value {
-        match m.name.as_ref() {
+    fn receive(&self, b: &Blueprint) -> Value {
+        match b.name.to_string().as_ref() {
             "get_wallpaper" => Value::Text(get_wallpaper()),
             _ => Value::Boolean(false),
         }
