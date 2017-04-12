@@ -1,81 +1,157 @@
-#![feature(box_syntax, box_patterns)]
-
-use std::io;
-
-mod parser;
-
-extern crate plugin;
-use plugin::*;
-
-extern crate desktop;
-use desktop::*;
+use std::io::{self, Write};
 
 fn main() {
-    let mut shell = Shell { plugins: vec![] };
-    const VERSION: &'static str = env!("CARGO_PKG_VERSION");
-    println!("welcome to turtle shell v.{}!", VERSION);
-    let w = Wallpaper {};
-    let plugins: Vec<&Plugin> = vec![&w];
-    shell.load_plugins(plugins);
+    let mut ts = TurtleShell { plugins: vec![] };
+
     loop {
+        print!("\u{1f422} ");
+        io::stdout().flush().unwrap();
         let mut input = String::new();
         io::stdin().read_line(&mut input).expect("failed to read line");
-        let command = parser::parse_command(&input);
 
+        println!("{}", &ts.parse(&input));
     }
+
 }
 
-struct Shell<'a> {
-    plugins: Vec<(&'a Plugin, Vec<Blueprint<'a>>)>,
+struct TurtleShell<'a> {
+    plugins: Vec<&'a Plugin>,
 }
 
-impl<'a> Shell<'a> {
-    fn execute_command(&self, command: &parser::Command, return_type: ValueType) -> Value {
+impl<'a> TurtleShell<'a> {
+    fn load_plugin(&mut self, plugin: &'a Plugin) -> bool {
+        self.plugins.push(plugin);
+        plugin.load()
+    }
+
+    fn parse(&self, input: &str) -> String {
+        let c = Command::parse(input);
+        self.execute(&c)
+    }
+
+    fn execute(&self, command: &Command) -> String {
         match command {
-            &parser::Command::Literal(ref literal) => {
-                match Value::new(&literal, return_type) {
-                    Ok(value) => value,
-                    Err(message) => Value::new(&message, ValueType::Error).unwrap(),
+            &Command::Literal(ref s) => s.to_string(),
+            &Command::Expression { ref terms } => {
+                let message = self.execute(&terms[0]);
+                let mut params = vec![];
+                for term in &terms[1..] {
+                    params.push(self.execute(term));
                 }
-            }
-            &parser::Command::Expression { ref terms } => {
-                let first = self.execute_command(&terms[0], return_type);
-                if let Some(mut blueprint) = self.find_blueprint(&first.to_string()) {
-                    for (e_term, mut b_term) in terms[1..].iter().zip(blueprint.terms.iter_mut()) {
-                        let vt = b_term.value_type;
-                        b_term.set(self.execute_command(e_term, vt));
-                    }
-                    return blueprint.send();
-                }
-                return Value::new(&format!("command not found: {}", first.to_string()),
-                                  ValueType::Error)
-                               .unwrap();
+                self.send(&message, params)
             }
         }
     }
 
-    fn load_plugins(&mut self, plugins: Vec<&'a Plugin>) {
-        for plugin in plugins {
-            print!("loading {}...", plugin.name());
-            if plugin.load() {
-                let blueprints = plugin.blueprints();
-                self.plugins.push((plugin, blueprints));
-                println!("done");
+    fn send(&self, message: &str, params: Vec<String>) -> String {
+        for m in self.messages() {
+            if message == m {
+                return self.receive(message, params);
+            }
+        }
+        for plugin in &self.plugins {
+            for m in plugin.messages() {
+                if message == m {
+                    return plugin.receive(message, params);
+                }
+            }
+        }
+        return "message not found D:".to_string();
+    }
+}
+
+// ~~~~~ plugin ~~~~~:
+
+pub trait Plugin {
+    fn name(&self) -> String;
+    fn load(&self) -> bool;
+    fn messages(&self) -> Vec<&str>;
+    fn receive(&self, message: &str, params: Vec<String>) -> String;
+}
+
+impl<'a> Plugin for TurtleShell<'a> {
+    fn name(&self) -> String {
+        "core".to_string()
+    }
+    fn load(&self) -> bool {
+        true
+    }
+    fn messages(&self) -> Vec<&str> {
+        vec!["+", "-", "\"", "goodbye"]
+    }
+    fn receive(&self, message: &str, params: Vec<String>) -> String {
+        match message {
+            "+" => {
+                match self.add(params) {
+                    Ok(s) => s.to_string(),
+                    Err(err) => err,
+                }
+            }
+            "-" => "subtracting!".to_string(),
+            "\"" => params.join(" "),
+            "goodbye" => std::process::exit(0),
+            _ => format!("message \"{}\" not found :c", message),
+        }
+    }
+}
+impl<'a> TurtleShell<'a> {
+    fn add(&self, params: Vec<String>) -> Result<f64, String> {
+        let mut x = 0.0;
+        for param in params {
+            match param.parse::<f64>() {
+                Ok(v) => x += v,
+                Err(_) => {
+                    return Err(format!("the value \"{}\" is invalid and cannot be added", param))
+                }
+            }
+        }
+        Ok(x)
+    }
+}
+
+// ~~~~~ parser ~~~~~:
+
+pub enum Command {
+    Literal(String),
+    Expression { terms: Vec<Command> },
+}
+
+impl Command {
+    pub fn parse(text: &str) -> Command {
+        Command::_parse(&mut text.chars())
+    }
+
+    fn _parse(chars: &mut std::str::Chars) -> Command {
+
+        let mut params = vec![];
+
+        let mut word = String::new();
+
+        while let Some(c) = chars.next() {
+            if c.is_whitespace() {
+                if !word.is_empty() {
+                    params.push(Command::Literal(word));
+                }
+                word = String::new();
+            } else if c == '(' {
+                if !word.is_empty() {
+                    params.push(Command::Literal(word));
+                }
+                word = String::new();
+                params.push(Command::_parse(chars));
+            } else if c == ')' {
+                if !word.is_empty() {
+                    params.push(Command::Literal(word));
+                }
+                return Command::Expression { terms: params };
             } else {
-                println!("error!");
+                word.push(c);
             }
         }
-    }
 
-    fn find_blueprint(&self, name: &str) -> Option<&Blueprint> {
-        for &(ref plugin, ref blueprints) in &self.plugins {
-            //let blueprints: Vec<Blueprint<'a>>;
-            for blueprint in blueprints {
-                if blueprint.name.to_string() == name {
-                    return Some(blueprint);
-                }
-            }
+        if !word.is_empty() {
+            params.push(Command::Literal(word));
         }
-        None
+        Command::Expression { terms: params }
     }
 }

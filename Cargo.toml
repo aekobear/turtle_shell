@@ -1,13 +1,6 @@
 [package]
-name = "turtle_shell"
+name = "turtle_shell2"
 version = "0.1.0"
 authors = ["eiko <kokumeiko@gmail.com>"]
 
 [dependencies]
-
-plugin = { path = "lib/plugin" }
-desktop = { path = "plugins/desktop" }
-
-conrod = "*"
-mrusty = "*"
-
