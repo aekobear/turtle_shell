@@ -1,9 +1,11 @@
 use std::io::{self, Write};
+use std::fs;
+use std::path::Path;
 
 fn main() {
-    let mut ts = TurtleShell { plugins: vec![] };
-
-    loop {
+    let mut ts = TurtleShell::new();
+    ts.load_turbins();
+    while ts.running() {
         print!("\u{1f422} ");
         io::stdout().flush().unwrap();
         let mut input = String::new();
@@ -15,21 +17,56 @@ fn main() {
 }
 
 struct TurtleShell<'a> {
+    running: bool,
+    turbins: Vec<Turbin>,
     plugins: Vec<&'a Plugin>,
 }
 
+
 impl<'a> TurtleShell<'a> {
+    fn new() -> TurtleShell<'a> {
+        TurtleShell {
+            running: true,
+            turbins: vec![],
+            plugins: vec![],
+        }
+    }
+
+    fn running(&self) -> bool {
+        self.running
+    }
+
     fn load_plugin(&mut self, plugin: &'a Plugin) -> bool {
         self.plugins.push(plugin);
         plugin.load()
     }
 
-    fn parse(&self, input: &str) -> String {
+    fn load_turbins(&mut self) -> bool {
+        if let Ok(dirs) = fs::read_dir("./plugins/bin") {
+            for entry in dirs {
+                let entry = entry.unwrap();
+                if let Some(ext) = entry.path().extension() {
+                    if ext == "turbin" {
+                        let t = Turbin(entry.path()
+                                           .to_str()
+                                           .unwrap()
+                                           .to_string());
+                        println!("found: {}", t.name());
+                        self.turbins.push(t);
+                    }
+                }
+            }
+            return true;
+        }
+        false
+    }
+
+    fn parse(&mut self, input: &str) -> String {
         let c = Command::parse(input);
         self.execute(&c)
     }
 
-    fn execute(&self, command: &Command) -> String {
+    fn execute(&mut self, command: &Command) -> String {
         match command {
             &Command::Literal(ref s) => s.to_string(),
             &Command::Expression { ref terms } => {
@@ -43,16 +80,24 @@ impl<'a> TurtleShell<'a> {
         }
     }
 
-    fn send(&self, message: &str, params: Vec<String>) -> String {
+    fn send(&mut self, message: &str, params: Vec<String>) -> String {
         for m in self.messages() {
             if message == m {
                 return self.receive(message, params);
             }
         }
+
         for plugin in &self.plugins {
             for m in plugin.messages() {
                 if message == m {
                     return plugin.receive(message, params);
+                }
+            }
+        }
+        for turbin in &self.turbins {
+            for m in turbin.messages() {
+                if message == m {
+                    return turbin.receive(message, params);
                 }
             }
         }
@@ -65,32 +110,40 @@ impl<'a> TurtleShell<'a> {
 pub trait Plugin {
     fn name(&self) -> String;
     fn load(&self) -> bool;
-    fn messages(&self) -> Vec<&str>;
+    fn messages(&self) -> Vec<String>;
     fn receive(&self, message: &str, params: Vec<String>) -> String;
 }
 
-impl<'a> Plugin for TurtleShell<'a> {
+impl<'a> TurtleShell<'a> {
     fn name(&self) -> String {
         "core".to_string()
     }
     fn load(&self) -> bool {
         true
     }
-    fn messages(&self) -> Vec<&str> {
-        vec!["+", "-", "\"", "goodbye"]
+    fn messages(&self) -> Vec<String> {
+        vec!["+", "-", "\"", "goodbye"].iter().map(|&s| s.to_owned()).collect()
     }
-    fn receive(&self, message: &str, params: Vec<String>) -> String {
+    fn receive(&mut self, message: &str, params: Vec<String>) -> String {
         match message {
-            "+" => match self.add(params) {
+            "+" => {
+                match self.add(params) {
+
                     Ok(s) => s.to_string(),
                     Err(err) => err,
-                },
-            "-" => match self.subtract(params) {
+                }
+            }
+            "-" => {
+                match self.subtract(params) {
                     Ok(d) => d.to_string(),
                     Err(err) => err,
-                },
+                }
+            }
             "\"" => params.join(" "),
-            "goodbye" => std::process::exit(0),
+            "goodbye" => {
+                self.running = false;
+                "oki bai!".to_string()
+            }
             _ => format!("message \"{}\" not found :c", message),
         }
     }
@@ -113,14 +166,22 @@ impl<'a> TurtleShell<'a> {
             for param in &params[1..] {
                 match param.parse::<f64>() {
                     Ok(v) => first -= v,
-                    Err(_) => return Err(format!("the value \"{}\" is invalid and can not subtract", param)),
+                    Err(_) => {
+                        return Err(format!("the value \"{}\" is invalid and can not subtract",
+                                           param))
+                    }
                 }
             }
             return Ok(first);
         }
-        return Err(format!("the value \"{}\" is invalid and cannot be subtracted", params[0]));
+        return Err(format!("the value \"{}\" is invalid and cannot be subtracted",
+                           params[0]));
     }
 }
+
+// ~~~~~ filesystem ~~~~~:
+
+
 
 // ~~~~~ parser ~~~~~:
 
@@ -166,5 +227,59 @@ impl Command {
             params.push(Command::Literal(word));
         }
         Command::Expression { terms: params }
+    }
+}
+
+// ~~~~~ turbin ~~~~~:
+
+use std::process::Command as Com;
+
+struct Turbin(String);
+
+impl Plugin for Turbin {
+    fn name(&self) -> String {
+        self.instruct(vec!["name".into()])
+    }
+
+    fn load(&self) -> bool {
+        match self.instruct(vec!["load".into()]).parse::<bool>() {
+            Ok(val) => val,
+            Err(_) => false,
+        }
+    }
+
+    fn messages(&self) -> Vec<String> {
+        self.instruct(vec!["messages".into()])
+            .split(" ")
+            .map(|s| s.to_owned())
+            .collect()
+    }
+
+    fn receive(&self, message: &str, mut params: Vec<String>) -> String {
+        let mut metacommand = vec!["receive".into(), message.into()];
+        metacommand.extend(params);
+        self.instruct(metacommand)
+    }
+}
+
+impl Turbin {
+    fn instruct(&self, args: Vec<String>) -> String {
+        let mut com = Com::new(&self.0);
+        for arg in args {
+            com.arg(arg);
+        }
+        let output = com.output().expect(&format!("failed to execute turbin: {}", self.0));
+        if let Ok(mut message) = String::from_utf8(output.stdout) {
+            message.pop();
+            return message;
+        }
+
+        if let Ok(mut error) = String::from_utf8(output.stderr) {
+            error.pop();
+            return error;
+        }
+
+        return String::new();
+
     }
 }
