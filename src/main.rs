@@ -81,13 +81,14 @@ impl<'a> Plugin for TurtleShell<'a> {
     }
     fn receive(&self, message: &str, params: Vec<String>) -> String {
         match message {
-            "+" => {
-                match self.add(params) {
+            "+" => match self.add(params) {
                     Ok(s) => s.to_string(),
                     Err(err) => err,
-                }
-            }
-            "-" => "subtracting!".to_string(),
+                },
+            "-" => match self.subtract(params) {
+                    Ok(d) => d.to_string(),
+                    Err(err) => err,
+                },
             "\"" => params.join(" "),
             "goodbye" => std::process::exit(0),
             _ => format!("message \"{}\" not found :c", message),
@@ -106,6 +107,18 @@ impl<'a> TurtleShell<'a> {
             }
         }
         Ok(x)
+    }
+    fn subtract(&self, params: Vec<String>) -> Result<f64, String> {
+        if let Ok(mut first) = params[0].parse::<f64>() {
+            for param in &params[1..] {
+                match param.parse::<f64>() {
+                    Ok(v) => first -= v,
+                    Err(_) => return Err(format!("the value \"{}\" is invalid and can not subtract", param)),
+                }
+            }
+            return Ok(first);
+        }
+        return Err(format!("the value \"{}\" is invalid and cannot be subtracted", params[0]));
     }
 }
 
