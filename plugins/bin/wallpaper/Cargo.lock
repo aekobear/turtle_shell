@@ -1,0 +1,11 @@
+[root]
+name = "wallpaper"
+version = "0.1.0"
+dependencies = [
+ "turbin 0.1.0",
+]
+
+[[package]]
+name = "turbin"
+version = "0.1.0"
+
