@@ -122,7 +122,7 @@ impl<'a> TurtleShell<'a> {
         true
     }
     fn messages(&self) -> Vec<String> {
-        vec!["+", "-", "\"", "goodbye"].iter().map(|&s| s.to_owned()).collect()
+        vec!["+", "-", "echo", "goodbye"].iter().map(|&s| s.to_owned()).collect()
     }
     fn receive(&mut self, message: &str, params: Vec<String>) -> String {
         match message {
@@ -139,7 +139,7 @@ impl<'a> TurtleShell<'a> {
                     Err(err) => err,
                 }
             }
-            "\"" => params.join(" "),
+            "echo" => params.join(" "),
             "goodbye" => {
                 self.running = false;
                 "oki bai!".to_string()
@@ -201,8 +201,14 @@ impl Command {
 
         let mut word = String::new();
 
+        let mut stringmode = false;
+
         while let Some(c) = chars.next() {
-            if c.is_whitespace() {
+            if c == '"' {
+                stringmode = !stringmode;
+            } else if stringmode {
+                word.push(c);
+            } else if c.is_whitespace() {
                 if !word.is_empty() {
                     params.push(Command::Literal(word));
                 }
