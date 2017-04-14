@@ -122,7 +122,7 @@ impl<'a> TurtleShell<'a> {
         true
     }
     fn messages(&self) -> Vec<String> {
-        vec!["+", "-", "echo", "exit"].iter().map(|&s| s.to_owned()).collect()
+        vec!["+", "-", "/", "*", "echo", "exit"].iter().map(|&s| s.to_owned()).collect()
     }
     fn receive(&mut self, message: &str, params: Vec<String>) -> String {
         match message {
@@ -136,6 +136,18 @@ impl<'a> TurtleShell<'a> {
             "-" => {
                 match self.subtract(params) {
                     Ok(d) => d.to_string(),
+                    Err(err) => err,
+                }
+            }
+            "/" => {
+                match self.divide(params) {
+                    Ok(q) => q.to_string(),
+                    Err(err) => err,
+                }
+            }
+            "*" => {
+                match self.multiply(params) {
+                    Ok(p) => p.to_string(),
                     Err(err) => err,
                 }
             }
@@ -161,6 +173,7 @@ impl<'a> TurtleShell<'a> {
         }
         Ok(x)
     }
+
     fn subtract(&self, params: Vec<String>) -> Result<f64, String> {
         if let Ok(mut first) = params[0].parse::<f64>() {
             for param in &params[1..] {
@@ -175,6 +188,35 @@ impl<'a> TurtleShell<'a> {
             return Ok(first);
         }
         return Err(format!("the value \"{}\" is invalid and cannot be subtracted",
+                           params[0]));
+    }
+
+    fn multiply(&self, params: Vec<String>) -> Result<f64, String> {
+        let mut x = 1.0;
+        for param in params {
+            if let Ok(f) = param.parse::<f64>() {
+                x *= f;
+            } else {
+                return Err(format!("the value \"{}\" is invalid and can not be multiplied.",
+                                   param));
+            }
+        }
+        Ok(x)
+    }
+
+    fn divide(&self, params: Vec<String>) -> Result<f64, String> {
+        if let Ok(mut first) = params[0].parse::<f64>() {
+            for param in &params[1..] {
+                match param.parse::<f64>() {
+                    Ok(v) => first /= v,
+                    Err(_) => {
+                        return Err(format!("the value \"{}\" is invalid and can not divide", param))
+                    }
+                }
+            }
+            return Ok(first);
+        }
+        return Err(format!("the value \"{}\" is invalid and cannot be divided",
                            params[0]));
     }
 }
