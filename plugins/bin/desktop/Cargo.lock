@@ -1,5 +1,5 @@
 [root]
-name = "wallpaper"
+name = "desktop"
 version = "0.1.0"
 dependencies = [
  "turbin 0.1.0",
