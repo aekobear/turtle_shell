@@ -27,6 +27,7 @@ impl turbin::Turbin for Desktop {
             "get_wallpaper" => Desktop::get_wallpaper(),
             "set_wallpaper" => {
                 if let Some(first) = params.first() {
+                    println!("setting: {}", first);
                     Desktop::set_wallpaper(first);
                 };
                 String::new()
@@ -63,7 +64,7 @@ impl Desktop {
 
     fn set_wallpaper(filepath: &str) {
         let output = Command::new("gsettings")
-            .arg("get")
+            .arg("set")
             .arg("org.gnome.desktop.background")
             .arg("picture-uri")
             .arg(filepath)
@@ -73,7 +74,7 @@ impl Desktop {
             //println!("exit status: {}", code);
         }
         if let Ok(error) = String::from_utf8(output.stderr) {
-            //println!("error: {}", error);
+            println!("error: {}", error);
         }
         if let Ok(message) = String::from_utf8(output.stdout) {
             //println!("message: {}", message);
