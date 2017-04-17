@@ -1,3 +1,5 @@
+extern crate rand;
+
 use TurtleShell;
 
 impl<'a> TurtleShell<'a> {
@@ -8,7 +10,10 @@ impl<'a> TurtleShell<'a> {
         true
     }
     pub fn messages(&self) -> Vec<String> {
-        vec!["+", "-", "/", "*", "echo", "s", "exit"].iter().map(|&s| s.to_owned()).collect()
+        vec!["+", "-", "/", "*", "format_decimal", "echo", "s", "random", "exit"]
+            .iter()
+            .map(|&s| s.to_owned())
+            .collect()
     }
     pub fn receive(&mut self, message: &str, params: Vec<String>) -> String {
         match message {
@@ -37,6 +42,13 @@ impl<'a> TurtleShell<'a> {
                     Err(err) => err,
                 }
             }
+            "format_decimal" => {
+                match self.format_decimal(params) {
+                    Ok(s) => s,
+                    Err(err) => err,
+                }
+            }
+            "random" => rand::random::<f64>().to_string(),
             "echo" => params.join(" "),
             "s" => params.join(""),
             "exit" => {
@@ -105,5 +117,14 @@ impl<'a> TurtleShell<'a> {
         }
         return Err(format!("the value \"{}\" is invalid and cannot be divided",
                            params[0]));
+    }
+    fn format_decimal(&self, params: Vec<String>) -> Result<String, String> {
+        if let Ok(decimal) = params[0].parse::<f64>() {
+            if let Ok(digits) = params[1].parse::<usize>() {
+                return Ok(format!("{:.*}", digits, decimal));
+            }
+            return Err(format!("the value \"{}\" is an invalid number of digits", params[1]));
+        }
+        return Err(format!("the value \"{}\" is an invalid number", params[0]));
     }
 }
