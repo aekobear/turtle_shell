@@ -2,7 +2,7 @@
 do every minute: 
 _________________________________________________________________________
 
-set_wallpaper "path/to/wallpaper_{{ format_decimal (* random 5) 0 }}.jpg"
+set_wallpaper (s "path/to/wallpaper_" (format_decimal (* random 5) 0) ".jpg")
 _________________________________________________________________________
 
 

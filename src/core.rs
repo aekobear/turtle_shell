@@ -8,7 +8,7 @@ impl<'a> TurtleShell<'a> {
         true
     }
     pub fn messages(&self) -> Vec<String> {
-        vec!["+", "-", "/", "*", "echo", "exit"].iter().map(|&s| s.to_owned()).collect()
+        vec!["+", "-", "/", "*", "echo", "s", "exit"].iter().map(|&s| s.to_owned()).collect()
     }
     pub fn receive(&mut self, message: &str, params: Vec<String>) -> String {
         match message {
@@ -38,6 +38,7 @@ impl<'a> TurtleShell<'a> {
                 }
             }
             "echo" => params.join(" "),
+            "s" => params.join(""),
             "exit" => {
                 self.running = false;
                 "oki bai!".to_string()
