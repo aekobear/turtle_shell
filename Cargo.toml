@@ -5,3 +5,4 @@ authors = ["eiko <kokumeiko@gmail.com>"]
 
 [dependencies]
 rand = "*"
+gtk = "*"
