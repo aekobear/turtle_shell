@@ -1,3 +1,5 @@
+use std::io::{self, Write};
+
 extern crate rand;
 
 use TurtleShell;
@@ -10,7 +12,7 @@ impl<'a> TurtleShell<'a> {
         true
     }
     pub fn messages(&self) -> Vec<String> {
-        vec!["+", "-", "/", "*", "format_decimal", "echo", "s", "run", "random", "exit"]
+        vec!["+", "-", "/", "*", "format_decimal", "echo", "s", "run", "ask", "random", "exit"]
             .iter()
             .map(|&s| s.to_owned())
             .collect()
@@ -52,6 +54,7 @@ impl<'a> TurtleShell<'a> {
             "echo" => params.join(" "),
             "s" => params.join(""),
             "run" => self.run(params).unwrap(),
+            "ask" => self.ask(params).unwrap(),
             "exit" => {
                 self.running = false;
                 "oki bai!".to_string()
@@ -132,5 +135,15 @@ impl<'a> TurtleShell<'a> {
 
     fn run(&mut self, params: Vec<String>) -> Result<String, String> {
         Ok(self.parse(&params[0]))
+    }
+
+    fn ask(&self, params: Vec<String>) -> Result<String, String> {
+        print!(">");
+        io::stdout().flush();
+        let mut input = String::new();
+        match io::stdin().read_line(&mut input) {
+            Ok(_) => Ok(input.to_owned()),
+            Err(error) => Err(error.to_string()),
+        }
     }
 }
