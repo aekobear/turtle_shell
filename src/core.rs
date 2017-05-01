@@ -12,10 +12,23 @@ impl<'a> TurtleShell<'a> {
         true
     }
     pub fn messages(&self) -> Vec<String> {
-        vec!["+", "-", "/", "*", "format_decimal", "echo", "s", "run", "ask", "random", "exit"]
-            .iter()
-            .map(|&s| s.to_owned())
-            .collect()
+        vec!["+",
+             "-",
+             "/",
+             "*",
+             "format_decimal",
+             "join",
+             "s",
+             "run",
+             "ask",
+             "say",
+             "sayline",
+             "\\n",
+             "random",
+             "exit"]
+                .iter()
+                .map(|&s| s.to_owned())
+                .collect()
     }
     pub fn receive(&mut self, message: &str, params: Vec<String>) -> String {
         match message {
@@ -51,10 +64,13 @@ impl<'a> TurtleShell<'a> {
                 }
             }
             "random" => rand::random::<f64>().to_string(),
-            "echo" => params.join(" "),
+            "join" => params[1..].join(&params[0]),
             "s" => params.join(""),
             "run" => self.run(params).unwrap(),
             "ask" => self.ask(params).unwrap(),
+            "say" => self.say(params).unwrap(),
+            "sayline" => self.sayline(params).unwrap(),
+            "\\n" => "\n".to_owned(),
             "exit" => {
                 self.running = false;
                 "oki bai!".to_string()
@@ -149,5 +165,22 @@ impl<'a> TurtleShell<'a> {
             }
             Err(error) => Err(error.to_string()),
         }
+    }
+
+    fn say(&self, params: Vec<String>) -> Result<String, String> {
+        for param in params {
+            print!("{}", param);
+        }
+        io::stdout().flush();
+        return Ok(String::new());
+    }
+
+    fn sayline(&self, params: Vec<String>) -> Result<String, String> {
+        for param in params {
+            print!("{}", param);
+        }
+        print!("\n");
+        io::stdout().flush();
+        return Ok(String::new());
     }
 }
