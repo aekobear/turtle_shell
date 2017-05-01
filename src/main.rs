@@ -1,6 +1,7 @@
 use std::io::{self, Write};
 use std::fs;
 use std::path::Path;
+use std::collections::HashMap;
 
 mod parser;
 
@@ -30,6 +31,7 @@ struct TurtleShell<'a> {
     running: bool,
     turbins: Vec<Turbin>,
     plugins: Vec<&'a Plugin>,
+    bindings: HashMap<String, String>,
 }
 
 
@@ -39,6 +41,7 @@ impl<'a> TurtleShell<'a> {
             running: true,
             turbins: vec![],
             plugins: vec![],
+            bindings: HashMap::new(),
         }
     }
 

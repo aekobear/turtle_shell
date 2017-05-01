@@ -1,4 +1,5 @@
 use std::io::{self, Write};
+use std::collections::HashMap;
 
 extern crate rand;
 
@@ -12,26 +13,32 @@ impl<'a> TurtleShell<'a> {
         true
     }
     pub fn messages(&self) -> Vec<String> {
-        vec!["+",
-             "-",
-             "/",
-             "*",
-             "format_decimal",
-             "join",
-             "s",
-             "run",
-             "ask",
-             "say",
-             "sayline",
-             "\\n",
-             "random",
-             "exit"]
+        let mut m: Vec<String> = vec!["=",
+                                      "+",
+                                      "-",
+                                      "/",
+                                      "*",
+                                      "format_decimal",
+                                      "join",
+                                      "s",
+                                      "run",
+                                      "ask",
+                                      "say",
+                                      "sayline",
+                                      "\\n",
+                                      "random",
+                                      "exit"]
                 .iter()
                 .map(|&s| s.to_owned())
-                .collect()
+                .collect();
+        for binding in self.bindings.keys() {
+            m.push(binding.clone());
+        }
+        m
     }
     pub fn receive(&mut self, message: &str, params: Vec<String>) -> String {
         match message {
+            "=" => self.bind(params).unwrap(),
             "+" => {
                 match self.add(params) {
 
@@ -75,11 +82,21 @@ impl<'a> TurtleShell<'a> {
                 self.running = false;
                 "oki bai!".to_string()
             }
-            _ => format!("message \"{}\" not found :c", message),
+            other => {
+                if let Some(x) = self.bindings.get(other) {
+                    x.clone()
+                } else {
+                    format!("message \"{}\" not found :c", message)
+                }
+            }
         }
     }
 }
 impl<'a> TurtleShell<'a> {
+    fn bind(&mut self, params: Vec<String>) -> Result<String, String> {
+        self.bindings.insert(params[0].clone(), params[1].clone());
+        Ok(params[1].clone())
+    }
     fn add(&self, params: Vec<String>) -> Result<f64, String> {
         let mut x = 0.0;
         for param in params {
