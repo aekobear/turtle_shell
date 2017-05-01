@@ -142,7 +142,11 @@ impl<'a> TurtleShell<'a> {
         io::stdout().flush();
         let mut input = String::new();
         match io::stdin().read_line(&mut input) {
-            Ok(_) => Ok(input.to_owned()),
+            Ok(_) => {
+                let mut i = input.to_owned();
+                i.pop();
+                Ok(i)
+            }
             Err(error) => Err(error.to_string()),
         }
     }
